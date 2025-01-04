@@ -1,6 +1,7 @@
 import { createClient, defineScript } from 'redis';
 import { itemsKey, itemsByViewsKey } from '$services/keys';
 import { itemsViewsKey } from '../../../seeds/seed-keys';
+import { apply } from 'keygrip';
 
 const client = createClient({
 	socket: {
@@ -9,6 +10,22 @@ const client = createClient({
 	},
 	password: process.env.REDIS_PW,
 	scripts: {
+		unlock: defineScript({
+			NUMBER_OF_KEYS: 1,
+			transformArguments(key: string, token: string) {
+				return [key, token];
+			},
+			transformReply(reply: any) {
+				return reply;
+
+			},
+			SCRIPT:
+				`
+				if redis.call('GET', KEYS[1]) == ARGV[1] then
+					return redis.call('DEL', KEYS[1])
+				end
+			`
+		}),
 		addOneAndStore: defineScript({
 			NUMBER_OF_KEYS: 1,
 			SCRIPT: `
