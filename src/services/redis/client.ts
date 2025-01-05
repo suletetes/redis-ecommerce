@@ -1,7 +1,7 @@
 import { createClient, defineScript } from 'redis';
 import { itemsKey, itemsByViewsKey } from '$services/keys';
 import { itemsViewsKey } from '../../../seeds/seed-keys';
-import { apply } from 'keygrip';
+import { createIndexes } from './create-indexes';
 
 const client = createClient({
 	socket: {
@@ -17,10 +17,8 @@ const client = createClient({
 			},
 			transformReply(reply: any) {
 				return reply;
-
 			},
-			SCRIPT:
-				`
+			SCRIPT: `
 				if redis.call('GET', KEYS[1]) == ARGV[1] then
 					return redis.call('DEL', KEYS[1])
 				end
@@ -70,5 +68,11 @@ client.on('connect', async () => {
 });
 client.on('error', (err) => console.error(err));
 client.connect();
-
+client.on('connect', async () => {
+	try {
+		await createIndexes();
+	} catch (err) {
+		console.error(err);
+	}
+});
 export { client };

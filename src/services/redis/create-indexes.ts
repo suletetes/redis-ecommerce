@@ -3,6 +3,12 @@ import { client } from './client';
 import { SchemaFieldTypes } from 'redis';
 
 export const createIndexes = async () => {
+	const indexes = await client.ft._list();
+	const exists = indexes.find((index) => index === itemsIndexKey());
+
+	if (exists) {
+		return;
+	}
 	return client.ft.create(
 		itemsIndexKey(),
 		{
