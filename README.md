@@ -1,4 +1,4 @@
-# rbay: Redis-Powered Svelte E-commerce Platform
+# Redis-Powered Svelte E-commerce Platform
 
 rbay is a full-stack e-commerce web application built with SvelteKit, TypeScript, TailwindCSS, and Redis. It features
 real-time auctions, user authentication, item bidding, and analytics, all powered by a high-performance Redis backend.
